@@ -9,7 +9,7 @@ namespace Task3._2
 {
     class Program
     {
-        void PrintArray(int[,] arr, int row, int col) // вывод двумерного массива
+        void PrintArray(int?[,] arr, int row, int col) // вывод двумерного массива
         {
             for(int i = 0; i < row; i++)
             {
@@ -20,7 +20,8 @@ namespace Task3._2
                 Console.WriteLine();
             }
         }
-        void CondenseArray(int[,] arr, int row, int col)// уплотняет матрицу и находит первую строку 
+
+        void CondenseArray(ref int?[,] arr, int row, int col, Program myProg)// уплотняет матрицу и находит первую строку 
         {                                               // с положительным элементом
             int?[] zeroRow = new int?[row]; // массив, индекс которого будет показывать какие все эдементы
                                             // начального массива в СТРОКЕ равны нулю
@@ -53,7 +54,6 @@ namespace Task3._2
                 if (!isNotZero) zeroCol[i] = i; // если значение не поменялось - в массив заносится
                                                 // значение равное индекску Столбца, где одни нули
             }
-
             int? r = null; // переменная, которая будет получать индекс с массива строк, если значение не null
             int? c = null; // переменная, которая будет получать индекс с массива столбцов, если значение не null
             Console.WriteLine("-----Уплотненная матрица-----");
@@ -65,7 +65,11 @@ namespace Task3._2
                 for (int j = 0; j< col; j++)
                 {
                     if (!zeroCol[j].Equals(null)) c = (int)zeroCol.GetValue(j); // если значение не равно null - присваивает индекс столбца с нулями
-                    if (i == r || j == c) continue; // если пришло время выводить массив индекс которого == индексу с нулями - пропустить
+                    if (i == r || j == c)// если пришло время выводить массив индекс которого == индексу с нулями 
+                    {                    // присвоить значение null и пропустить
+                        arr[i, j] = null;
+                        continue;
+                    } 
                     if(arr[i,j] > 0) // первый положительный элемент
                     {
                         if(!isPosinive)
@@ -74,27 +78,27 @@ namespace Task3._2
                             isPosinive = true; // больше не ищется
                         }
                     }
-                    Console.Write($"{arr[i, j]} \t"); // вывод уплотненной матрицы
                 }
-                Console.WriteLine(); // вывод уплотненной матрицы
             }
             Console.WriteLine();
-            Console.WriteLine("В первой из строк с индексом " + (firsrPositive )  + " содержится хотя бы один положительный элемент.");
+            myProg.PrintArray(arr, row, col); // вывод массива
+            Console.WriteLine("В первой из строк с индексом " + (firsrPositive )  + " содержится хотя бы один положительный элемент из старого массива.");
+            // вывод индекса строки с первым положительным элементом
         }
         static void Main(string[] args)
         {
             var myProgram = new Program();
             Console.WriteLine("-------Задача 3.2-------");
-            int[,] originalArray = { // создание изначального массива
+            int?[,] originalArray = { // создание изначального массива
                 { 0,-2,-6, 0,-3, 0,-1},
-                { 0, 2, 3, 4, 5,-6, 2},
+                { 0, -2, 3, 4, 5,6, 2},
                 { 0, 0, 0, 0, 0, 0, 0},
                 { 0, 0, 1, 0, 0, 0, 0}
             };
             int rows = originalArray.GetUpperBound(0) + 1; // строки
             int columns = originalArray.GetUpperBound(1) + 1; // столбцы
             myProgram.PrintArray(originalArray, rows, columns); // вывод матрицы
-            myProgram.CondenseArray(originalArray, rows, columns); // уплотняет матрицу и находит первую строку
+            myProgram.CondenseArray(ref originalArray, rows, columns, myProgram); // уплотняет матрицу и находит первую строку
                                                                    // с положительным элементом
         }
     }
